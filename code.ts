@@ -1,13 +1,16 @@
 // Function to generate a random date
-function getRandomDate(): string {
-  const date = new Date(2009, 10, 10);
+function getRandomDate(start: Date, end: Date): string {
 
-  const month = date.toLocaleString('en-US', { month: 'long' });
-  console.log(`Month: ${month}`) 
-  // expected: November
-  // actual: 11/10/2009, 00:00:00 AM
+  const startTime = start.getTime();
+  const endTime = end.getTime();
+  const randomTime = startTime + Math.random() * (endTime - startTime);
 
-  return `${month}`;
+  const date = new Date(randomTime);
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+  const month = monthNames[date.getMonth()];
+
+  return `${date.getDate()} ${month} ${date.getFullYear()}`;
 }
 
 async function updateSelectedTextFields() {
@@ -18,13 +21,16 @@ async function updateSelectedTextFields() {
     return;
   }
 
-  const randomDate = getRandomDate();
-
+  // TODO – add UI for config
+  const startDate = new Date(2023, 0, 1); // January 1, 2023
+  const endDate = new Date(); // Today
+  
   // Load fonts for all selected text nodes
   const fontPromises = selection.map(async (node) => {
     if (node.type === "TEXT") {
+      const randomDate = getRandomDate(startDate, endDate);
       await figma.loadFontAsync(node.fontName as FontName);
-      node.characters = randomDate;
+      node.characters = randomDate.toString();
     }
   });
 
